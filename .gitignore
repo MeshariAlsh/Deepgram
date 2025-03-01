@@ -1,0 +1,16 @@
+myenv/
+
+Modified_shaq.png
+
+.env
+
+DMs_history/
+posts/
+
+photo_to_meme.py
+
+__pycache__/
+
+session.json
+
+.DS_Store
