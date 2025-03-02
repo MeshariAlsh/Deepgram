@@ -12,7 +12,30 @@ logger = logging.getLogger()
 image_path = 'posts/photos/ps7.png'
 caption = 'Leaked Playstation 7'
 
+def load_scheduled_posts():
+
+    """
+    Loads the path and caption of pre-defined posts to be published on the instagram account. 
+    """
+    try:
+        with open("scheduled_posts", "r") as f:
+            new_posts = json.load(f)
+            return new_posts
+
+    except Exception as e:
+       logger.info("Couldn't load post from JSON file: %s" % e)
+
+def  process_posts():
+
+    #TODO add block here the checks if the caption was written before by comaparing it with a json of all successful posts. if written before ignore it and dont post. 
+
+    post_into_list = load_scheduled_posts()
+    #TODO add block here the sends the new and unrepititve posts  
+
+
 def upload_photo_post(user):
+
+    process_posts()
 
     """
     Uploads an image with a predefined caption (see line 15) to the instagram account logged in (see line 11 & 12). 

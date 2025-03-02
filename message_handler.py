@@ -17,7 +17,7 @@ def save_entire_DMs(all_threads):
         with open("DMs_history/entire_chats_history.json", "w") as f:
             json.dump(all_threads, f, indent=4)
     
-            print(f" Last seen messages: {all_threads} \n")
+            #print(f" Last seen messages: {all_threads} \n")
     except Exception as e:
         logger.info("Couldn't dump DM history into a JSON file: %s" % e)
 
@@ -105,10 +105,13 @@ def get_unread_DMs(user):
                         first_message = messages[0] 
                    
                     last_seen = old_messages.get(thread_id)
-                    if last_seen != first_message:
-                        new_messages[thread_id] = first_message
+                    print(f"last_seen value: {last_seen}")
+                    print(f"first message value: {first_message}")
 
-        save_new_messages(new_messages)
+                    if last_seen != first_message:
+                        old_messages[thread_id] = first_message
+
+        save_new_messages(old_messages)
         save_entire_DMs(threads_dict)
 
     except Exception as e: 
@@ -116,7 +119,7 @@ def get_unread_DMs(user):
 
     
 
-    process_text(new_messages) # deepseek_api.py
+    process_text(old_messages) # deepseek_api.py
 
 
     

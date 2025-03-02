@@ -1,10 +1,12 @@
 from message_handler import get_unread_DMs, load_latest_messages, save_new_messages
+from posting import upload_photo_post
 from dotenv import load_dotenv
 from instagrapi import Client
 from instagrapi.exceptions import LoginRequired
 import os 
 import json
 import logging
+import random
 
 load_dotenv() # For script to access env file
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -64,13 +66,28 @@ def login_user(user):
 
 def main():
 
-    user = Client() # An instance of class Client to send request to instagram
-    user.delay_range = [5, 10] # mimic human interaction
-    login_user(user) 
-    #upload_photo_post(user)
+    
+
+        user = Client() # An instance of class Client to send request to instagram
+        user.delay_range = [5, 10]
+        login_user(user) 
+        # mimic human interaction
+
+        get_unread_DMs(user)
+    
+    # To switch between actions and not raise instagram flags for automated behaviour
+    #random_float = random.random()
+    #if (random_float % 2 == 0 ):
+         #pass
+         #upload_photo_post(user)
+    #else:
+       # get_unread_DMs(user)
+
+
+   
 
     
-    get_unread_DMs(user)
+   
     
 
 
