@@ -5,7 +5,9 @@ import json
 import logging
 
 load_dotenv() # For script to access env file
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s',
+                         handlers=[logging.FileHandler("bot_activity.log"),
+                         logging.StreamHandler()])
 logger = logging.getLogger()
 
 def save_entire_DMs(all_threads):
@@ -63,6 +65,7 @@ def get_unread_DMs(user):
     all_pending_DMs = user.direct_pending_inbox(20)
     old_messages = load_latest_messages()
 
+    bot_id = user.user_id # This is your account 
 
     # Process regular DMs
     for thread in all_DMs:
@@ -90,9 +93,6 @@ def get_unread_DMs(user):
         except Exception as e:
             logger.info("Couldn't process pending DMs: %s" % e)
 
-    # **Detect new messages**
-    new_messages = {}   
- 
     # Gets the latest/ first message in the thread( chat) depending on where the thread is from
     try: 
         for thread_id , messages in threads_dict.items():
@@ -105,21 +105,39 @@ def get_unread_DMs(user):
                         first_message = messages[0] 
                    
                     last_seen = old_messages.get(thread_id)
-                    print(f"last_seen value: {last_seen}")
-                    print(f"first message value: {first_message}")
+                    sender_id = list(first_message.keys())[0]
 
-                    if last_seen != first_message:
-                        old_messages[thread_id] = first_message
+                    # Convert both IDs to strings for comparison
+                    bot_id_str = str(bot_id)
+                    sender_id_str = str(sender_id)
 
-        save_new_messages(old_messages)
+                    print(f"last_seen value: {last_seen}\n")
+                    print(f"first message value: {first_message}\n")
+                    print(f"Old messages Thread ID value: {old_messages.get(thread_id, 'No previous messages')}\n")
+                    print(f"Sender ID value: {sender_id_str} (type: {type(sender_id)})\n")
+                    print(f"Bot ID value: {bot_id_str} (type: {type(bot_id)})\n")
+                    print(f"Is message from bot? {bot_id_str == sender_id_str}\n")
+                    
+                    if bot_id_str == sender_id_str:
+                        # Skip messages sent by our own bot account
+                        logger.info(f"Skipping message from bot's own account in thread {thread_id}")
+                    else:
+                        # Only process and save messages from other users
+                        if last_seen != first_message:
+                            old_messages[thread_id] = first_message
+                            save_new_messages(old_messages)
+                            logger.info(f"New message detected from user {sender_id} in thread {thread_id}")
+                            # Move process_text inside this block so it only processes non-bot messages
+                            process_text(old_messages, user)
         save_entire_DMs(threads_dict)
 
     except Exception as e: 
        logger.info("Couldn't find the latest messages from inbox: %s" % e)
 
-    
+    # Remove this line since we moved it inside the if block
+    #process_text(old_messages, user) # deepseek_api.py
 
-    process_text(old_messages) # deepseek_api.py
+    #respond_to_other_party(response, other_party_id, user)
 
 
     

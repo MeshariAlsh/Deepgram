@@ -6,45 +6,71 @@ import json
 import logging
 
 load_dotenv() # For script to access env file
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s', 
+                    handlers=[logging.FileHandler("bot_activity.log"),
+                            logging.StreamHandler()])
 logger = logging.getLogger()
 
-image_path = 'posts/photos/ps7.png'
-caption = 'Leaked Playstation 7'
+def save_successful_post(post):
+    try:
+        with open("successful_posts.json", "w") as f:
+            json.dump(post, f, indent=4)
+            print(f"Successful post saved to JSON file: {post}\n")
+    except Exception as e:
+        logger.info(f"Couldn't save successful post to JSON file: {e}")
+
+def load_successful_posts():
+    """
+    Load successful posts from JSON file.
+    """
+    try:
+        with open("successful_posts.json", "r") as f:
+            content = f.read().strip()
+            if not content:  # if the file is empty return {}
+                return {}
+            return json.loads(content)
+    except Exception as e:
+        logger.info(f"Couldn't load successful posts from JSON file: {e}")
+        return {}
 
 def load_scheduled_posts():
 
     """
-    Loads the path and caption of pre-defined posts to be published on the instagram account. 
+    Load scheduled posts from JSON file.
     """
     try:
-        with open("scheduled_posts", "r") as f:
-            new_posts = json.load(f)
-            return new_posts
-
+        with open("scheduled_posts.json", "r") as f:
+            posts = json.load(f)
+            return posts
     except Exception as e:
-       logger.info("Couldn't load post from JSON file: %s" % e)
-
-def  process_posts():
-
-    #TODO add block here the checks if the caption was written before by comaparing it with a json of all successful posts. if written before ignore it and dont post. 
-
-    post_into_list = load_scheduled_posts()
-    #TODO add block here the sends the new and unrepititve posts  
+       logger.info(f"Couldn't load post from JSON file: {e}")
 
 
-def upload_photo_post(user):
+def process_posts(user):
 
-    process_posts()
+    """
+    Process the posts to be uploaded to the instagram account.
+    """
+    try:
+
+        previous_posts = load_successful_posts()
+        scheduled_posts = load_scheduled_posts()
+
+        for caption, image_path in scheduled_posts.items():
+            if caption not in previous_posts:
+                post = {caption: image_path}
+                save_successful_post(post)
+                print(f"Posting new post: {caption} and the image path is: {image_path}\n")
+                upload_photo_post(user, caption, image_path)
+    except Exception as e:
+        logger.info(f"Error processing posts: {e}")
+
+def upload_photo_post(user, caption, image_path):
 
     """
     Uploads an image with a predefined caption (see line 15) to the instagram account logged in (see line 11 & 12). 
     """
 
-    if not os.path.exists(image_path):
-        logger.error(f"Image Not Found:{image_path}")
-        return
-    
     try:
         media = user.photo_upload(
             path=image_path, 
@@ -55,3 +81,4 @@ def upload_photo_post(user):
             print(media)
     except Exception as e:
         logger.error(f"Error posting photo: {str(e)}")
+
