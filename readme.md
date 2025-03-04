@@ -1,7 +1,6 @@
-# Instagram DM Automation Bot with Deepseek Chat API
+# Deepgram - Instagram Bot with Deepseek Chat API
 
-This project automates the process of reading Instagram Direct Messages (DMs) and generating human-like responses using the Deepseek Chat API. It also supports posting images to Instagram. The project is designed with modularity and error handling in mind, making it easy to maintain and extend.
-
+This project automates the process of reading Instagram DMs and generating human-like responses using the Deepseek Chat API. It is also a post scheduler for pre-made content. 
 ## Features
 
 - **Instagram DM Processing:**  
@@ -28,10 +27,10 @@ This project automates the process of reading Instagram Direct Messages (DMs) an
   Contains functions for saving, loading, and processing DM threads. It also calls the Deepseek API module to generate responses.
 
 - **deepseek_api.py:**  
-  Integrates with the Deepseek Chat API to generate responses for incoming messages. Includes logic to ignore trivial messages.
+  Integrates with the Deepseek Chat API to generate responses for incoming messages. Includes logic to ignore trivial messages. Sends responses to other parties.
 
 - **posting.py:**  
-  Provides functionality to upload a photo to Instagram with a predefined caption.
+  A content management system that handles Instagram post scheduling, prevents duplicate posts, and manages image uploads with captions
 
 ## Prerequisites
 
@@ -51,13 +50,11 @@ DEEPSEEK_API_KEYS=your_deepseek_api_key
 ```
 ## Roadmap and Future Features
 
-- **Automated Response Delivery:**  
-  A function to send the generated response back to the user who inquired via DM is planned. This will complete the interactive loop of the bot.
+- **Flagging Important Messages:**  
+  A function to mark important messages so that they are not missed by being auto-replied to.
 
-- **Post Scheduler:**  
-  A scheduling system for automating photo posting will be added, allowing for timed content releases.
+- **Fectch Content From Email:**  
+  A system for getting, organising, and publishing content. This will allow account owners to simply email the type of content they want published and at what time. This is convenient for business owners using Instagram as a marketing tool.
 
-- **Improved Error Handling & Retry Logic:**  
-  Enhance the robustness of API calls by adding retry mechanisms and more detailed error reporting.
 
 
